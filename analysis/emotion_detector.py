@@ -55,5 +55,16 @@ class TextEmotionDetector:
         # Sort by probability descending
         emotionScores.sort(key=lambda x: x[1], reverse=True)
 
-        # Return top 3
-        return emotionScores[:3]
+        # 🔥 Remove weak neutral dominance
+        filtered = []
+
+        for label, score in emotionScores:
+            if label == "neutral" and score < 70:
+                continue
+            filtered.append((label, score))
+
+        # fallback if everything removed
+        if not filtered:
+            filtered = emotionScores
+
+        return filtered[:3]

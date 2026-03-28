@@ -11,7 +11,7 @@ class SpeechToTextEngine:
 
     def loadModel(self):
         print("Loading Whisper model...")
-        model = whisper.load_model(config.whisperModelSize, device=self.device)
+        model = whisper.load_model("base").to("cuda")
         print("Whisper model loaded successfully")
         return model
 
