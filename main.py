@@ -4,7 +4,8 @@ from processing.audio_preprocess import preprocessAudio
 from processing.speech_to_text import SpeechToTextEngine
 from analysis.emotion_detector import TextEmotionDetector
 from analysis.trend_analyzer import EmotionTrendAnalyzer
-
+from processing.transcript_merger import mergeTranscripts
+from analysis.summarizer import LLMSummarizer
 
 def main():
 
@@ -19,8 +20,11 @@ def main():
     sttEngine = SpeechToTextEngine()
     emotionDetector = TextEmotionDetector()
     trendAnalyzer = EmotionTrendAnalyzer()
+    llmSummarizer = LLMSummarizer()
 
     print("\nProcessing chunks...\n")
+
+    allTranscripts = []   # 🔥 ONLY THIS needed
 
     for chunk in chunks:
 
@@ -37,27 +41,27 @@ def main():
         print("Transcript:")
         print(transcript if transcript else "[No speech detected]")
 
+        # 🔥 ADD THIS (IMPORTANT)
         if transcript.strip():
+            allTranscripts.append(transcript)
+
             emotions = emotionDetector.detectEmotion(transcript)
 
             print("\nTop Emotions:")
             for label, score in emotions:
                 print(f"{label} → {score:.2f}%")
 
-            # 🔥 IMPORTANT: add to trend analyzer
             trendAnalyzer.addChunkEmotions(emotions)
 
         print("\n-----------------------------\n")
 
-    # 🔥 FINAL SUMMARY OUTPUT
+    # 🔥 OVERALL EMOTION ANALYSIS
     print("\n===== OVERALL EMOTION ANALYSIS =====\n")
 
     summary = trendAnalyzer.getTrendSummary()
 
-    # sort by percentage
     sortedSummary = sorted(summary.items(), key=lambda x: x[1], reverse=True)
 
-    # apply threshold + top 4
     topEmotions = [e for e in sortedSummary if e[1] >= 5][:4]
 
     for emotion, percentage in topEmotions:
@@ -65,6 +69,17 @@ def main():
 
     print("\nDominant Emotion:", trendAnalyzer.getDominantEmotion())
 
+    # 🔥 FINAL MERGED TRANSCRIPT
+    finalText = mergeTranscripts(allTranscripts)
+
+    print("\n===== FINAL TRANSCRIPT =====\n")
+    print(finalText)
+
+    print("\n===== SUMMARY =====\n")
+
+    summaryText = llmSummarizer.generateSummary(finalText, topEmotions)
+
+    print(summaryText)
 
 if __name__ == "__main__":
     main()
