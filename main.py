@@ -54,13 +54,16 @@ def main():
 
     summary = trendAnalyzer.getTrendSummary()
 
-    for emotion, percentage in sorted(summary.items(), key=lambda x: x[1], reverse=True):
+    # sort by percentage
+    sortedSummary = sorted(summary.items(), key=lambda x: x[1], reverse=True)
+
+    # apply threshold + top 4
+    topEmotions = [e for e in sortedSummary if e[1] >= 5][:4]
+
+    for emotion, percentage in topEmotions:
         print(f"{emotion} → {percentage:.2f}%")
 
     print("\nDominant Emotion:", trendAnalyzer.getDominantEmotion())
-
-    print("\nEmotion Flow:")
-    print(" → ".join(trendAnalyzer.getEmotionFlow()))
 
 
 if __name__ == "__main__":
