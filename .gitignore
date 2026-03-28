@@ -3,5 +3,32 @@ __pycache__/
 models/
 output/
 utils/
+
+# virtual environments
 venv/
 venv310/
+env/
+.venv/
+
+# python cache
+__pycache__/
+*.pyc
+
+# models
+*.pt
+*.bin
+*.model
+
+# audio files
+*.wav
+*.mp3
+
+# temp files
+temp/
+
+# logs
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
