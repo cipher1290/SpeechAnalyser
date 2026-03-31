@@ -2,11 +2,11 @@
 # SESSION SETTINGS
 # ===============================
 
-# Maximum live recording time (seconds)
-maxSesionDuration = 180   # 3 minutes
+# # Maximum live recording time (seconds)
+# maxSesionDuration = 180   # 3 minutes
 
-# Allow manual early exit
-allowEarlyExit = True
+# # Allow manual early exit
+# allowEarlyExit = True
 
 
 # ===============================
@@ -20,39 +20,39 @@ sampleRate = 16000
 calibrationDuration = 5
 
 
-# ===============================
-# CHUNK SETTINGS
-# ===============================
+# # ===============================
+# # CHUNK SETTINGS
+# # ===============================
 
-chunkSize = 10          # seconds
-chunkOverlap = 2       # seconds
-chunkStep = chunkSize - chunkOverlap
-
-
-# ===============================
-# EMOTION SETTINGS
-# ===============================
-
-emotionLabels = [
-    "happy",
-    "sad",
-    "angry",
-    "fear",
-    "stress",
-    "surprise",
-    "neutral"
-]
+# chunkSize = 10          # seconds
+# chunkOverlap = 2       # seconds
+# chunkStep = chunkSize - chunkOverlap
 
 
-# ===============================
-# MODEL SETTINGS
-# ===============================
+# # ===============================
+# # EMOTION SETTINGS
+# # ===============================
 
-# Whisper model size
-whisperModelSize = "base"
+# emotionLabels = [
+#     "happy",
+#     "sad",
+#     "angry",
+#     "fear",
+#     "stress",
+#     "surprise",
+#     "neutral"
+# ]
 
-# NLP summarization model
-summarizationModel = "facebook/bart-large-cnn"
+
+# # ===============================
+# # MODEL SETTINGS
+# # ===============================
+
+# # Whisper model size
+# whisperModelSize = "base"
+
+# # NLP summarization model
+# summarizationModel = "facebook/bart-large-cnn"
 
 
 # ===============================
