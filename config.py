@@ -24,7 +24,7 @@ calibrationDuration = 5
 # CHUNK SETTINGS
 # ===============================
 
-chunkSize = 7          # seconds
+chunkSize = 10          # seconds
 chunkOverlap = 2       # seconds
 chunkStep = chunkSize - chunkOverlap
 
@@ -65,3 +65,5 @@ sampleAudioFolder = "data/sample_audio/"
 # Output directories
 logFolder = "output/logs/"
 reportFolder = "output/reports/"
+
+ASSEMBLYAI_API_KEY = "28229c0c53f344fdb553037273c6205b"

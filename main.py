@@ -1,11 +1,14 @@
 from audio.file_loader import loadAudioFile
-from audio.chunker import generateAudioChunks
+# from audio.chunker import generateAudioChunks
+from audio.chunker import splitText
 from processing.audio_preprocess import preprocessAudio
-from processing.speech_to_text import SpeechToTextEngine
-from analysis.emotion_detector import TextEmotionDetector
+# from processing.speech_to_text import SpeechToTextEngine
 from analysis.trend_analyzer import EmotionTrendAnalyzer
-from processing.transcript_merger import mergeTranscripts
+# from processing.transcript_merger import mergeTranscripts
+# from processing.transcript_cleaner import TranscriptCleaner
 from analysis.summarizer import LLMSummarizer
+from analysis.emotion_detector import RobertaEmotionDetector
+from processing.assemblyai_transcript import AssemblySTT
 
 def main():
 
@@ -14,48 +17,68 @@ def main():
     print("\nLoading audio...")
     audioData, sampleRate = loadAudioFile(filePath)
 
-    print("Generating chunks...")
-    chunks = generateAudioChunks(audioData, sampleRate)
+    # print("Generating chunks...")
+    # chunks = generateAudioChunks(audioData, sampleRate)
 
-    sttEngine = SpeechToTextEngine()
-    emotionDetector = TextEmotionDetector()
+    # sttEngine = SpeechToTextEngine()
+    emotionDetector =RobertaEmotionDetector()
     trendAnalyzer = EmotionTrendAnalyzer()
     llmSummarizer = LLMSummarizer()
+    # cleaner = TranscriptCleaner()
+    sttEngine = AssemblySTT()
 
     print("\nProcessing chunks...\n")
 
-    allTranscripts = []   # 🔥 ONLY THIS needed
+    fullTranscript = sttEngine.transcribe(filePath)
 
-    for chunk in chunks:
+    textChunks = splitText(fullTranscript)
+    chunkCount = 1
+    for chunk in textChunks:
+        print(f"=== Chunk {chunkCount} ===")
+        print(chunk if chunk else "[No speech detected]")
+        emotions = emotionDetector.detectEmotion(chunk)
+        print("\nTop Emotions:")
+        for label, score in emotions:
+            print(f"{label} → {score:.2f}%")
 
-        print(f"=== Chunk {chunk.chunkId} "
-              f"({chunk.startTime:.1f}s - {chunk.endTime:.1f}s) ===")
-
-        processedAudio = preprocessAudio(chunk)
-
-        transcript = sttEngine.transcribeChunk(
-            processedAudio,
-            sampleRate
-        )
-
-        print("Transcript:")
-        print(transcript if transcript else "[No speech detected]")
-
-        # 🔥 ADD THIS (IMPORTANT)
-        if transcript.strip():
-            allTranscripts.append(transcript)
-
-            emotions = emotionDetector.detectEmotion(transcript)
-
-            print("\nTop Emotions:")
-            for label, score in emotions:
-                print(f"{label} → {score:.2f}%")
-
-            trendAnalyzer.addChunkEmotions(emotions)
+        trendAnalyzer.addChunkEmotions(emotions)
 
         print("\n-----------------------------\n")
+        chunkCount = chunkCount + 1
 
-    # 🔥 OVERALL EMOTION ANALYSIS
+
+    # allTranscripts = []   # 🔥 ONLY THIS needed
+
+    # for chunk in chunks:
+
+    #     # print(f"=== Chunk {chunk.chunkId} "
+    #     #       f"({chunk.startTime:.1f}s - {chunk.endTime:.1f}s) ===")
+
+    #     processedAudio = preprocessAudio(chunk)
+
+    #     transcript = sttEngine.transcribeChunk(
+    #         processedAudio,
+    #         sampleRate
+    #     )
+
+    #     print("Transcript:")
+    #     print(transcript if transcript else "[No speech detected]")
+
+    #     # 🔥 ADD THIS (IMPORTANT)
+    #     if transcript.strip():
+    #         allTranscripts.append(transcript)
+
+    #         emotions = emotionDetector.detectEmotion(transcript)
+
+    #         print("\nTop Emotions:")
+    #         for label, score in emotions:
+    #             print(f"{label} → {score:.2f}%")
+
+    #         trendAnalyzer.addChunkEmotions(emotions)
+
+    #     print("\n-----------------------------\n")
+
+    # OVERALL EMOTION ANALYSIS
     print("\n===== OVERALL EMOTION ANALYSIS =====\n")
 
     summary = trendAnalyzer.getTrendSummary()
@@ -69,15 +92,22 @@ def main():
 
     print("\nDominant Emotion:", trendAnalyzer.getDominantEmotion())
 
-    # 🔥 FINAL MERGED TRANSCRIPT
-    finalText = mergeTranscripts(allTranscripts)
+    # FINAL MERGED TRANSCRIPT
+    # rawText = mergeTranscripts(allTranscripts)
+    
+    # print("\n===== INITIAL TRANSCRIPT =====\n")
+
+    # print(rawText)
+    # print("\nCleaning transcript with LLM...\n")
+
+    # finalText = cleaner.clean(rawText)
 
     print("\n===== FINAL TRANSCRIPT =====\n")
-    print(finalText)
+    print(fullTranscript)
 
     print("\n===== SUMMARY =====\n")
 
-    summaryText = llmSummarizer.generateSummary(finalText, topEmotions)
+    summaryText = llmSummarizer.generateSummary(fullTranscript, topEmotions)
 
     print(summaryText)
 

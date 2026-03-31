@@ -10,48 +10,13 @@ class AudioChunk:
         self.audioData = audioData
         self.sampleRate = sampleRate
 
-
-def generateAudioChunks(audioData, sampleRate):
-    """
-    Splits full audio into overlapping chunks based on config settings.
-    Returns list of AudioChunk objects.
-    """
-
-    chunkSizeSamples = int(config.chunkSize * sampleRate)
-    chunkStepSamples = int(config.chunkStep* sampleRate)
-
-    totalSamples = len(audioData)
-    currentStart = 0
-    chunkId = 1
-
+def splitText(text, size=2):
+    sentences = text.split(".")
     chunks = []
 
-    while currentStart < totalSamples:
-
-        currentEnd = currentStart + chunkSizeSamples
-
-        # If last chunk shorter than chunk size → pad with zeros
-        if currentEnd > totalSamples:
-            chunkAudio = audioData[currentStart:totalSamples]
-            paddingNeeded = currentEnd - totalSamples
-            chunkAudio = np.pad(chunkAudio, (0, paddingNeeded))
-        else:
-            chunkAudio = audioData[currentStart:currentEnd]
-
-        startTime = currentStart / sampleRate
-        endTime = currentEnd / sampleRate
-
-        chunkObject = AudioChunk(
-            chunkId=chunkId,
-            startTime=startTime,
-            endTime=endTime,
-            audioData=chunkAudio,
-            sampleRate=sampleRate
-        )
-
-        chunks.append(chunkObject)
-
-        currentStart += chunkStepSamples
-        chunkId += 1
+    for i in range(0, len(sentences), size):
+        chunk = ". ".join(sentences[i:i+size])
+        if chunk.strip():
+            chunks.append(chunk.strip())
 
     return chunks

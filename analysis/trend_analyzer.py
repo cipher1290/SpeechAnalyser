@@ -20,7 +20,7 @@ class EmotionTrendAnalyzer:
         topLabel = emotions[0][0]
         topScore = emotions[0][1]
 
-        # 🔥 FIX 1: neutral suppression
+        # FIX 1: neutral suppression
         if topLabel == "neutral" and len(emotions) > 1:
             secondLabel, secondScore = emotions[1]
 
@@ -29,7 +29,7 @@ class EmotionTrendAnalyzer:
                 topLabel = secondLabel
                 topScore = secondScore
 
-        # 🔥 FIX 2: weighted aggregation (ignore weak neutral)
+        # FIX 2: weighted aggregation (ignore weak neutral)
         for label, score in emotions:
 
             if label == "neutral" and score < 70:
@@ -38,7 +38,7 @@ class EmotionTrendAnalyzer:
             if score >= self.threshold:
                 self.emotionScores[label] += score
 
-        # 🔥 FIX 3: clean flow tracking
+        # FIX 3: clean flow tracking
         self.chunkFlow.append(topLabel if topLabel else "neutral")
 
     def getTrendSummary(self):
@@ -63,7 +63,7 @@ class EmotionTrendAnalyzer:
         if not summary:
             return "neutral"
 
-        # 🔥 FIX 4: avoid neutral dominance
+        # FIX 4: avoid neutral dominance
         sortedEmotions = sorted(summary.items(), key=lambda x: x[1], reverse=True)
 
         for label, _ in sortedEmotions:
