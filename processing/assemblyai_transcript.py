@@ -31,7 +31,6 @@ class AssemblySTT:
         data = {
             "audio_url": audio_url,
             "language_detection": True,
-            "translate": True,
             "speech_models": ["universal-3-pro", "universal-2"]
         }
 
@@ -41,7 +40,13 @@ class AssemblySTT:
             headers=self.headers
         )
 
-        transcript_id = response.json()['id']
+        result = response.json()
+        
+        # SAFE CHECK
+        if "id" not in result:
+            raise RuntimeError(f"AssemblyAI Error: {result}")
+
+        transcript_id = result["id"]
         polling_endpoint = f"{self.base_url}/v2/transcript/{transcript_id}"
 
         while True:
